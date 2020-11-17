@@ -3,6 +3,7 @@ from tda_heap import Heap, arribo as arribo_h, heap_vacio, atencion as atencion_
 from tda_heap import cambiar_prioridad, buscar as buscar_h
 from tda_pila_dinamico import Pila, apilar, pila_vacia, desapilar
 from math import inf
+from random import randint
 
 
 class nodoArista(object):
@@ -316,87 +317,159 @@ def existe_paso(grafo, origen, destino):
             vadyacentes = vadyacentes.sig
     return resultado
 
+def amigos_daisy(grafo):
+    buscar = buscar_vertice(grafo, 'Daisy Ridley')
+    if buscar is not None:
+        adyacentes(buscar)
+
+def camino_pascal_driver(grafo):
+    camino_mas_corto = dijkstra(grafo, 'Pedro Pascal', 'Adam Driver')
+    fin = 'Adam Driver'
+    peso_total = None
+    while(not pila_vacia(camino_mas_corto)):
+        dato = desapilar(camino_mas_corto)
+        if(peso_total is None and fin == dato[1][0].info):
+            peso_total = dato[0]
+        if(fin == dato[1][0].info):
+            print(dato[1][0].info)
+            fin = dato[1][1]
+    print('peso total:', peso_total)
+
 g = Grafo(False)
 
-insertar_vertice(g, 'ARGENTINA', [-32, -58, 5])
-insertar_vertice(g, 'A')
-insertar_vertice(g, 'B')
-insertar_vertice(g, 'C')
-insertar_vertice(g, 'F')
-insertar_vertice(g, 'Z')
-insertar_vertice(g, 'J')
-insertar_vertice(g, 'W')
+nombres = ['Luciano Lujan', 'Zlatan Ibrahimovic', 'Rafael Nadal', 'Fox Mulder', 'Dana Scully', 'Daisy Ridley', 'Pedro Pascal', 'Adam Driver', 'Guido Rossum', 'Mark Hamill', 'Tom Holland', 'Robert Downey']
 
-ori = buscar_vertice(g, 'A')
-des = buscar_vertice(g, 'C')
-insertar_arista(g, 5, ori, des)
-des = buscar_vertice(g, 'B')
-insertar_arista(g, 15, ori, des)
+for n in nombres:
+    insertar_vertice(g, n)
 
-ori = buscar_vertice(g, 'C')
-des = buscar_vertice(g, 'B')
-insertar_arista(g, 25, ori, des)
-des = buscar_vertice(g, 'F')
-insertar_arista(g, 7, ori, des)
+ori = buscar_vertice(g, 'Luciano Lujan')
+des = buscar_vertice(g, 'Zlatan Ibrahimovic')
 
-ori = buscar_vertice(g, 'J')
-des = buscar_vertice(g, 'W')
-insertar_arista(g, 13, ori, des)
+if (ori is not None) and (des is not None):
+    insertar_arista(g, randint(1, 1500), ori, des)
 
-ori = buscar_vertice(g, 'W')
-des = buscar_vertice(g, 'F')
-insertar_arista(g, 33, ori, des)
+des = buscar_vertice(g, 'Robert Downey')
 
-ori = buscar_vertice(g, 'F')
-des = buscar_vertice(g, 'B')
-insertar_arista(g, 10, ori, des)
-des = buscar_vertice(g, 'Z')
-insertar_arista(g, 19, ori, des)
+if (ori is not None) and (des is not None):
+    insertar_arista(g, randint(1, 1500), ori, des)
 
-# print('profundidad')
-# ori = buscar_vertice(g, 'A')
-# barrido_profundidad(g, ori)
-# marcar_no_visitado(g)
-# print()
-# print('amplitud')
-# ori = buscar_vertice(g, 'A')
-# barrido_amplitud(g, ori)
-# des = buscar_vertice(g, 'J')
+des = buscar_vertice(g, 'Rafael Nadal')
+
+if (ori is not None) and (des is not None):
+    insertar_arista(g, randint(1, 1500), ori, des)
+
+des = buscar_vertice(g, 'Adam Driver')
+
+if (ori is not None) and (des is not None):
+    insertar_arista(g, randint(1, 1500), ori, des)
+
+des = buscar_vertice(g, 'Daisy Ridley')
+
+if (ori is not None) and (des is not None):
+    insertar_arista(g, randint(1, 1500), ori, des)
+
+des = buscar_vertice(g, 'Fox Mulder')
+
+if (ori is not None) and (des is not None):
+    insertar_arista(g, randint(1, 1500), ori, des)
+
+des = buscar_vertice(g, 'Dana Scully')
+
+if (ori is not None) and (des is not None):
+    insertar_arista(g, randint(1, 1500), ori, des)
+
+
+ori = buscar_vertice(g, 'Guido Rossum')
+des = buscar_vertice(g, 'Zlatan Ibrahimovic')
+
+if (ori is not None) and (des is not None):
+    insertar_arista(g, randint(1, 1500), ori, des)
+
+des = buscar_vertice(g, 'Tom Holland')
+
+if (ori is not None) and (des is not None):
+    insertar_arista(g, randint(1, 1500), ori, des)
+
+des = buscar_vertice(g, 'Daisy Ridley')
+
+if (ori is not None) and (des is not None):
+    insertar_arista(g, randint(1, 1500), ori, des)
+
+des = buscar_vertice(g, 'Pedro Pascal')
+
+if (ori is not None) and (des is not None):
+    insertar_arista(g, randint(1, 1500), ori, des)
+
+des = buscar_vertice(g, 'Mark Hamil')
+
+if (ori is not None) and (des is not None):
+    insertar_arista(g, randint(1, 1500), ori, des)
+
+ori = buscar_vertice(g, 'Zlatan Ibrahimovic')
+des = buscar_vertice(g, 'Robert Downey')
+
+if (ori is not None) and (des is not None):
+    insertar_arista(g, randint(1, 1500), ori, des)
+
+des = buscar_vertice(g, 'Daisy Ridley')
+
+if (ori is not None) and (des is not None):
+    insertar_arista(g, randint(1, 1500), ori, des)
+
+des = buscar_vertice(g, 'Mark Hamill')
+
+if (ori is not None) and (des is not None):
+    insertar_arista(g, randint(1, 1500), ori, des)
+
+des = buscar_vertice(g, 'Pedro Pascal')
+
+if (ori is not None) and (des is not None):
+    insertar_arista(g, randint(1, 1500), ori, des)
 
 print()
-print('existe paso')
+#amigos daisy
+amigos_daisy(g)
+
+print()
+#camino pascal driver
+camino_pascal_driver(g)
+
+print()
+
+#conectar rossum hamill
+ori = buscar_vertice(g, 'Guido Rossum')
+des = buscar_vertice(g, 'Mark Hamill')
+if (ori is not None) and (des is not None):
+    if existe_paso(g, ori, des):
+        print('existe paso entre Rossum y Hamill')
+    else:
+        print('no existe paso entre Rossum y Hamill')
+
 marcar_no_visitado(g)
-print(existe_paso(g, ori, des))
-print()
-""" ori = buscar_vertice(g, 'B')
-x = eliminar_arista(g, ori, 'F')
-print('dato eliminado', x)
-
-barrido_vertices(g)
-
-
-print('dijkstra')
-camino_mas_corto = dijkstra(g, 'A', 'J')
-fin = 'J'
-peso_total = None
-while(not pila_vacia(camino_mas_corto)):
-    dato = desapilar(camino_mas_corto)
-    if(peso_total is None and fin == dato[1][0].info):
-        peso_total = dato[0]
-    if(fin == dato[1][0].info):
-        print(dato[1][0].info)
-        fin = dato[1][1]
-print('peso total:', peso_total)
 
 print()
-print('prim')
-bosque = prim(g)
 
+#conectar rossum hamill
+ori = buscar_vertice(g, 'Tom Holland')
+des = buscar_vertice(g, 'Robert Downey')
+if (ori is not None) and (des is not None):
+    if existe_paso(g, ori, des):
+        print('existe paso entre Holland y Downey')
+    else:
+        print('no existe paso entre Holland y Downey')
+
+print()
+
+#Verificar si existe paso directo
+if (buscar_arista(ori, des.info) is not None):
+    print('Existe paso directo entre Holland y Downey')
+else:
+    print('No existe paso directo entre Holland y Downey')
+
+
+print()
+print('Arbol de expansion minima')
+print()
+bosque = kruskal(g)
 for i in range(0,len(bosque),2):
     print (bosque[i], bosque[i+1])
-
-# print()
-# print('kruskal')
-# bosque = kruskal(g)
-# for i in range(0,len(bosque),2):
-#     print (bosque[i], bosque[i+1]) """

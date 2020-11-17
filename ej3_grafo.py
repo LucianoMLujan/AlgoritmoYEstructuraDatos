@@ -3,6 +3,7 @@ from tda_heap import Heap, arribo as arribo_h, heap_vacio, atencion as atencion_
 from tda_heap import cambiar_prioridad, buscar as buscar_h
 from tda_pila_dinamico import Pila, apilar, pila_vacia, desapilar
 from math import inf
+from random import randint
 
 
 class nodoArista(object):
@@ -265,18 +266,21 @@ def prim(grafo):
                 adyac = adyac.sig
     return bosque
 
-def kruskal(grafo):
+def kruskal(grafo, tipo):
     """Algoritmo de Kruskal para hallar el árbol de expansión mínimo."""
     bosque = []
     aristas = Heap(tamanio(grafo) ** 2)
     aux = grafo.inicio
     while(aux is not None):
-        bosque.append([aux.info])
-        adyac = aux.adyacentes.inicio
-        while(adyac is not None):
-            arribo_h(aristas, [aux.info, adyac.destino], adyac.info)
-            adyac = adyac.sig
-        aux = aux.sig
+        if aux.datos[0] == tipo:
+            bosque.append([aux.info])
+            adyac = aux.adyacentes.inicio
+            while(adyac is not None):
+                arribo_h(aristas, [aux.info, adyac.destino], adyac.info)
+                adyac = adyac.sig
+            aux = aux.sig
+        else:
+            aux = aux.sig
     while(len(bosque) > 1 and not heap_vacio(aristas)):
         dato = atencion_h(aristas)
         origen = None
@@ -316,87 +320,88 @@ def existe_paso(grafo, origen, destino):
             vadyacentes = vadyacentes.sig
     return resultado
 
+def cantidad_maravilla(grafo, pais):
+    cont_nat, cont_arq = 0, 0
+    aux = grafo.inicio
+    while (aux is not None):
+        for p in aux.datos[1]:
+            if p == pais:
+                if aux.datos[0] == 'natural':
+                    cont_nat += 1
+                else:
+                    cont_arq += 1
+        aux = aux.sig
+    return cont_nat, cont_arq
+
+def maravillas_tipo(grafo, pais):
+    naturales, arquitectonicas = cantidad_maravilla(grafo, pais)
+    if naturales > 0 and arquitectonicas > 0:
+        print("El pais " + pais + " tiene maravilla natural y arquitectonica")
+    else:
+        print("El pais " + pais + " no posee maravilla natural y arquitectonica")
+
+
+def maravilla_mismo_tipo(grafo, pais):
+    naturales, arquitectonicas = cantidad_maravilla(grafo, pais)
+    if naturales > 1:
+        print("El pais " + pais + " tiene mas de una maravillas naturales")
+    elif arquitectonicas > 1:
+        print("El pais " + pais + " tiene mas de una maravillas arquitectonicas")
+    else:
+        print("El pais " + pais + " no posse mas de una maravilla del mismo tipo")
+
+
 g = Grafo(False)
 
-insertar_vertice(g, 'ARGENTINA', [-32, -58, 5])
-insertar_vertice(g, 'A')
-insertar_vertice(g, 'B')
-insertar_vertice(g, 'C')
-insertar_vertice(g, 'F')
-insertar_vertice(g, 'Z')
-insertar_vertice(g, 'J')
-insertar_vertice(g, 'W')
+maravillas = [
+    ['Bahía de Ha Long', ['natural', ['Vietnam']]],
+    ['Isla de Komodo', ['natural', ['Indonesia']]],
+    ['Río subterráneo de Puerto Princesa', ['natural', ['Filipinas']]],
+    ['Montaña de la Mesa', ['natural', ['Sudáfrica']]],
+    ['Cataratas del Iguazú', ['natural', ['Argentina', 'Brasil']]],
+    ['Río Amazonas', ['natural', ['Perú', 'Colombia', 'Brasil']]],
+    ['Isla Jeju', ['natural', ['Corea del Sur']]],
+    ['Chichén Itzá', ['arquitectonica', ['México']]],
+    ['Coliseo de Roma', ['arquitectonica', ['Italia']]],
+    ['Cristo Redentor', ['arquitectonica', ['Brasil']]],
+    ['Muralla China', ['arquitectonica', ['China']]],
+    ['Machu Picchu', ['arquitectonica', ['Perú']]],
+    ['Petra', ['arquitectonica', ['Jordania']]],
+    ['Taj Mahal', ['arquitectonica', ['India']]],
+]
 
-ori = buscar_vertice(g, 'A')
-des = buscar_vertice(g, 'C')
-insertar_arista(g, 5, ori, des)
-des = buscar_vertice(g, 'B')
-insertar_arista(g, 15, ori, des)
+for m in maravillas:
+    insertar_vertice(g, m[0], m[1])
 
-ori = buscar_vertice(g, 'C')
-des = buscar_vertice(g, 'B')
-insertar_arista(g, 25, ori, des)
-des = buscar_vertice(g, 'F')
-insertar_arista(g, 7, ori, des)
-
-ori = buscar_vertice(g, 'J')
-des = buscar_vertice(g, 'W')
-insertar_arista(g, 13, ori, des)
-
-ori = buscar_vertice(g, 'W')
-des = buscar_vertice(g, 'F')
-insertar_arista(g, 33, ori, des)
-
-ori = buscar_vertice(g, 'F')
-des = buscar_vertice(g, 'B')
-insertar_arista(g, 10, ori, des)
-des = buscar_vertice(g, 'Z')
-insertar_arista(g, 19, ori, des)
-
-# print('profundidad')
-# ori = buscar_vertice(g, 'A')
-# barrido_profundidad(g, ori)
-# marcar_no_visitado(g)
-# print()
-# print('amplitud')
-# ori = buscar_vertice(g, 'A')
-# barrido_amplitud(g, ori)
-# des = buscar_vertice(g, 'J')
-
-print()
-print('existe paso')
-marcar_no_visitado(g)
-print(existe_paso(g, ori, des))
-print()
-""" ori = buscar_vertice(g, 'B')
-x = eliminar_arista(g, ori, 'F')
-print('dato eliminado', x)
-
+for i in maravillas:
+    ori = buscar_vertice(g, i[0])
+    for j in maravillas:
+        des = buscar_vertice(g, j[0])
+        buscar = buscar_arista(ori, des.info)
+        if(ori.info != des.info and ori.datos[0] == des.datos[0] and buscar is None): 
+            insertar_arista(g, randint(50, 150), ori, des)
+ 
 barrido_vertices(g)
 
+print()
+print('kruskal')
+bosque = kruskal(g, 'natural')
+for i in range(0,len(bosque),2):
+    print (bosque[i], bosque[i+1]) 
 
-print('dijkstra')
-camino_mas_corto = dijkstra(g, 'A', 'J')
-fin = 'J'
-peso_total = None
-while(not pila_vacia(camino_mas_corto)):
-    dato = desapilar(camino_mas_corto)
-    if(peso_total is None and fin == dato[1][0].info):
-        peso_total = dato[0]
-    if(fin == dato[1][0].info):
-        print(dato[1][0].info)
-        fin = dato[1][1]
-print('peso total:', peso_total)
 
 print()
-print('prim')
-bosque = prim(g)
-
+print('kruskal')
+bosque = kruskal(g, 'arquitectonica')
 for i in range(0,len(bosque),2):
     print (bosque[i], bosque[i+1])
 
-# print()
-# print('kruskal')
-# bosque = kruskal(g)
-# for i in range(0,len(bosque),2):
-#     print (bosque[i], bosque[i+1]) """
+print()
+maravillas_tipo(g, "Brasil")
+print()
+maravilla_mismo_tipo(g, "Brasil")
+
+print()
+maravillas_tipo(g, "Argentina")
+print()
+maravilla_mismo_tipo(g, "Argentina")

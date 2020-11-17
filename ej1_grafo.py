@@ -2,16 +2,18 @@ from tda_cola import Cola, cola_vacia, arribo, atencion
 from tda_heap import Heap, arribo as arribo_h, heap_vacio, atencion as atencion_h
 from tda_heap import cambiar_prioridad, buscar as buscar_h
 from tda_pila_dinamico import Pila, apilar, pila_vacia, desapilar
+from tda_archivo import abrir, cerrar, guardar, leer
 from math import inf
 
 
 class nodoArista(object):
     """Clase nodo vértice."""
 
-    def __init__(self, info, destino):
+    def __init__(self, info, destino, datos=None):
         """Crea un nodo arista con la información cargada."""
         self.info = info
         self.destino = destino
+        self.datos = datos
         self.sig = None
 
 
@@ -62,15 +64,15 @@ def insertar_vertice(grafo, dato, datos=None):
         ant.sig = nodo
     grafo.tamanio += 1
 
-def insertar_arista(grafo, dato, origen, destino):
+def insertar_arista(grafo, info, origen, destino, datos):
     """Inserta una arista desde el vértice origen al destino."""
-    agregrar_arista(origen.adyacentes, dato, destino.info)
+    agregrar_arista(origen.adyacentes, info, destino.info, datos)
     if(not grafo.dirigido):
-        agregrar_arista(destino.adyacentes, dato, origen.info)
+        agregrar_arista(destino.adyacentes, info, origen.info, datos)
 
-def agregrar_arista(origen, dato, destino):
+def agregrar_arista(origen, info, destino, datos):
     """Agrega la arista desde el vértice origen al destino."""
-    nodo = nodoArista(dato, destino)
+    nodo = nodoArista(info, destino, datos)
     if (origen.inicio is None or origen.inicio.destino > destino):
         nodo.sig = origen.inicio
         origen.inicio = nodo
@@ -245,6 +247,53 @@ def dijkstra(grafo, origen, destino):
             aux = aux.sig
     return camino
 
+def dijkstra_tiempo(grafo, origen, destino):
+    """Algoritmo de Dijkstra para hallar el camino mas corto."""
+    no_visitados = Heap(tamanio(grafo))
+    camino = Pila()
+    aux = grafo.inicio
+    while(aux is not None):
+        if(aux.info == origen):
+            arribo_h(no_visitados, [aux, None], 0)
+        else:
+            arribo_h(no_visitados, [aux, None], inf)
+        aux = aux.sig
+
+    while(not heap_vacio(no_visitados)):
+        dato = atencion_h(no_visitados)
+        apilar(camino, dato)
+        aux = dato[1][0].adyacentes.inicio
+        while(aux is not None):
+            pos = buscar_h(no_visitados, aux.destino)
+            if(no_visitados.vector[pos][0] > dato[0] + aux.datos[4]):
+                no_visitados.vector[pos][1][1] = dato[1][0].info
+                cambiar_prioridad(no_visitados, pos, dato[0] + aux.datos[4])
+            aux = aux.sig
+    return camino
+
+def dijkstra_costo(grafo, origen, destino):
+    """Algoritmo de Dijkstra para hallar el camino mas corto."""
+    no_visitados = Heap(tamanio(grafo))
+    camino = Pila()
+    aux = grafo.inicio
+    while(aux is not None):
+        if(aux.info == origen):
+            arribo_h(no_visitados, [aux, None], 0)
+        else:
+            arribo_h(no_visitados, [aux, None], inf)
+        aux = aux.sig
+
+    while(not heap_vacio(no_visitados)):
+        dato = atencion_h(no_visitados)
+        apilar(camino, dato)
+        aux = dato[1][0].adyacentes.inicio
+        while(aux is not None):
+            pos = buscar_h(no_visitados, aux.destino)
+            if(no_visitados.vector[pos][0] > dato[0] + aux.datos[3]):
+                no_visitados.vector[pos][1][1] = dato[1][0].info
+                cambiar_prioridad(no_visitados, pos, dato[0] + aux.datos[3])
+            aux = aux.sig
+    return camino
 
 def prim(grafo):
     """Algoritmo de Prim para hallar el árbol de expansión mínimo."""
@@ -316,68 +365,89 @@ def existe_paso(grafo, origen, destino):
             vadyacentes = vadyacentes.sig
     return resultado
 
+def determinar_arribo(grafo, vertice):
+    """Barrido en profundidad del grafo."""
+    if(not vertice.visitado):
+        vertice.visitado = True
+        print(vertice.info)
+        adyacentes = vertice.adyacentes.inicio
+        while(adyacentes is not None):
+            adyacente = buscar_vertice(grafo, adyacentes.destino)
+            if(not adyacente.visitado):
+                    determinar_arribo(grafo, adyacente)
+            adyacentes = adyacentes.sig
+
+def exportar_grafo(grafo, file):
+    aux = grafo.inicio
+    while(aux is not None):
+        elementos = []
+        elementos.append(aux.info)
+        aux2 = aux.adyacentes.inicio
+        while(aux2 is not None):
+            elementos.append(aux2.destino)
+            aux2 = aux2.sig
+        aux = aux.sig
+        guardar(file, elementos)
+
+
 g = Grafo(False)
 
-insertar_vertice(g, 'ARGENTINA', [-32, -58, 5])
-insertar_vertice(g, 'A')
-insertar_vertice(g, 'B')
-insertar_vertice(g, 'C')
-insertar_vertice(g, 'F')
-insertar_vertice(g, 'Z')
-insertar_vertice(g, 'J')
-insertar_vertice(g, 'W')
+insertar_vertice(g, 'Argentina', [-32, -58, 5])
+insertar_vertice(g, 'China', [-32, -58, 5])
+insertar_vertice(g, 'Brasil', [-32, -58, 5])
+insertar_vertice(g, 'Tailandia', [-32, -58, 5])
+insertar_vertice(g, 'Grecia', [-32, -58, 5])
+insertar_vertice(g, 'Alemania', [-32, -58, 5])
+insertar_vertice(g, 'Francia', [-32, -58, 5])
+insertar_vertice(g, 'Estados Unidos', [-32, -58, 5])
+insertar_vertice(g, 'Japón', [-32, -58, 5])
+insertar_vertice(g, 'Jamaica', [-32, -58, 5])
 
-ori = buscar_vertice(g, 'A')
-des = buscar_vertice(g, 'C')
-insertar_arista(g, 5, ori, des)
-des = buscar_vertice(g, 'B')
-insertar_arista(g, 15, ori, des)
+#info van a ser los km, destino, datos=None -> va a ser el array con los demas datos
+ori = buscar_vertice(g, 'Argentina')
+des = buscar_vertice(g, 'China')
+insertar_arista(g, 550, ori, des, [8, 20, 'Volar S.A', 370, 12])
 
-ori = buscar_vertice(g, 'C')
-des = buscar_vertice(g, 'B')
-insertar_arista(g, 25, ori, des)
-des = buscar_vertice(g, 'F')
-insertar_arista(g, 7, ori, des)
+des = buscar_vertice(g, 'Brasil')
+insertar_arista(g, 30, ori, des, [9, 10, 'Volar S.A', 42, 1])
 
-ori = buscar_vertice(g, 'J')
-des = buscar_vertice(g, 'W')
-insertar_arista(g, 13, ori, des)
+des = buscar_vertice(g, 'Tailandia')
+insertar_arista(g, 900, ori, des, [5, 19, 'Volar S.A', 300, 14])
 
-ori = buscar_vertice(g, 'W')
-des = buscar_vertice(g, 'F')
-insertar_arista(g, 33, ori, des)
+ori = buscar_vertice(g, 'Grecia')
+des = buscar_vertice(g, 'Argentina')
+insertar_arista(g, 230, ori, des, [3, 6, 'Prueba S.A', 185, 3])
 
-ori = buscar_vertice(g, 'F')
-des = buscar_vertice(g, 'B')
-insertar_arista(g, 10, ori, des)
-des = buscar_vertice(g, 'Z')
-insertar_arista(g, 19, ori, des)
+des = buscar_vertice(g, 'Brasil')
+insertar_arista(g, 180, ori, des, [4, 8, 'Prueba S.A', 170, 4])
 
-# print('profundidad')
-# ori = buscar_vertice(g, 'A')
-# barrido_profundidad(g, ori)
-# marcar_no_visitado(g)
-# print()
-# print('amplitud')
-# ori = buscar_vertice(g, 'A')
-# barrido_amplitud(g, ori)
-# des = buscar_vertice(g, 'J')
+des = buscar_vertice(g, 'Estados Unidos')
+insertar_arista(g, 220, ori, des, [6, 10, 'Prueba S.A', 170, 4])
 
-print()
-print('existe paso')
-marcar_no_visitado(g)
-print(existe_paso(g, ori, des))
-print()
-""" ori = buscar_vertice(g, 'B')
-x = eliminar_arista(g, ori, 'F')
-print('dato eliminado', x)
+ori = buscar_vertice(g, 'Brasil')
+des = buscar_vertice(g, 'Alemania')
+insertar_arista(g, 300, ori, des, [12, 16, 'Volar S.A', 150, 4])
 
-barrido_vertices(g)
+ori = buscar_vertice(g, 'Alemania')
+des = buscar_vertice(g, 'Francia')
+insertar_arista(g, 70, ori, des, [12, 12.30, 'Volar S.A', 50, 0.30])
 
+ori = buscar_vertice(g, 'Francia')
+des = buscar_vertice(g, 'Tailandia')
+insertar_arista(g, 95, ori, des, [22, 24, 'Volar S.A', 450, 2])
 
-print('dijkstra')
-camino_mas_corto = dijkstra(g, 'A', 'J')
-fin = 'J'
+file = abrir('ej1_grafos.txt')
+exportar_grafo(g, file)
+pos = 0
+while(pos < len(file)):
+     persona = leer(file, pos)
+     pos += 1
+     print(persona)
+cerrar(file)
+a = input()
+
+camino_mas_corto = dijkstra(g, 'Argentina', 'Tailandia')
+fin = 'Tailandia'
 peso_total = None
 while(not pila_vacia(camino_mas_corto)):
     dato = desapilar(camino_mas_corto)
@@ -386,17 +456,38 @@ while(not pila_vacia(camino_mas_corto)):
     if(fin == dato[1][0].info):
         print(dato[1][0].info)
         fin = dato[1][1]
-print('peso total:', peso_total)
-
+print('KM total:', peso_total)
 print()
-print('prim')
-bosque = prim(g)
 
-for i in range(0,len(bosque),2):
-    print (bosque[i], bosque[i+1])
+camino_mas_corto = dijkstra_tiempo(g, 'Argentina', 'Tailandia')
+fin = 'Tailandia'
+peso_total = None
+while(not pila_vacia(camino_mas_corto)):
+    dato = desapilar(camino_mas_corto)
+    if(peso_total is None and fin == dato[1][0].info):
+        peso_total = dato[0]
+    if(fin == dato[1][0].info):
+        print(dato[1][0].info)
+        fin = dato[1][1]
+print('Tiempo total:', peso_total)
+print()
 
-# print()
-# print('kruskal')
-# bosque = kruskal(g)
-# for i in range(0,len(bosque),2):
-#     print (bosque[i], bosque[i+1]) """
+camino_mas_corto = dijkstra_costo(g, 'Argentina', 'Tailandia')
+fin = 'Tailandia'
+peso_total = None
+while(not pila_vacia(camino_mas_corto)):
+    dato = desapilar(camino_mas_corto)
+    if(peso_total is None and fin == dato[1][0].info):
+        peso_total = dato[0]
+    if(fin == dato[1][0].info):
+        print(dato[1][0].info)
+        fin = dato[1][1]
+print('Costo total:', peso_total)
+print() 
+ 
+print('Aeropuertos a los que se puede arribar desde Grecia')
+buscado = buscar_vertice(g, 'Grecia')
+
+if (buscado.adyacentes.inicio is not None):
+    determinar_arribo(g, buscado)
+
